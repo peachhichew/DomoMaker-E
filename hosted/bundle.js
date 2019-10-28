@@ -4,7 +4,7 @@ var handleDomo = function handleDomo(e) {
   e.preventDefault();
 
   $("#domoMessage").animate({ width: "hide" }, 350);
-  if ($("#domoName").val() == "" || $("#domoAge").val() == "") {
+  if ($("#domoName").val() == "" || $("#domoAge").val() == "" || $("#domoFavoriteFood").val() == "") {
     handleError("RAWR! All fields are required");
     return false;
   }
@@ -39,6 +39,17 @@ var DomoForm = function DomoForm(props) {
       "Age: "
     ),
     React.createElement("input", { id: "domoAge", type: "text", name: "age", placeholder: "Domo Age" }),
+    React.createElement(
+      "label",
+      { htmlFor: "favoriteFood" },
+      "Favorite food: "
+    ),
+    React.createElement("input", {
+      id: "domoFavoriteFood",
+      type: "text",
+      name: "favoriteFood",
+      placeholder: "Domo Favorite Food"
+    }),
     React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
     React.createElement("input", { className: "makeDomoSubmit", type: "submit", value: "Make Domo" })
   );
@@ -58,6 +69,7 @@ var DomoList = function DomoList(props) {
   }
 
   var domoNodes = props.domos.map(function (domo) {
+    console.log("asdasd domo: ", domo);
     return React.createElement(
       "div",
       { key: domo._id, className: "domo" },
@@ -77,6 +89,12 @@ var DomoList = function DomoList(props) {
         { className: "domoAge" },
         "Age: ",
         domo.age
+      ),
+      React.createElement(
+        "h3",
+        { className: "domoFavoriteFood" },
+        "Favorite food: ",
+        domo.favoriteFood
       )
     );
   });

@@ -3,15 +3,16 @@ const models = require("../models");
 const Domo = models.Domo;
 
 const makeDomo = (req, res) => {
-  if (!req.body.name || !req.body.age) {
+  if (!req.body.name || !req.body.age || !req.body.favoriteFood) {
     return res
       .status(400)
-      .json({ error: "RAWR! Both name and age are required" });
+      .json({ error: "RAWR! Name, age, and favorite food are required" });
   }
 
   const domoData = {
     name: req.body.name,
     age: req.body.age,
+    favoriteFood: req.body.favoriteFood,
     owner: req.session.account._id
   };
 
@@ -31,6 +32,8 @@ const makeDomo = (req, res) => {
     return res.status(400).json({ error: "An error occurred" });
   });
 
+  console.log("domoPromise", domoPromise);
+
   return domoPromise;
 };
 
@@ -40,6 +43,8 @@ const makerPage = (req, res) => {
       console.log(err);
       return res.status(400).json({ error: "An error occurred" });
     }
+
+    console.log("docs", docs);
 
     return res.render("app", { csrfToken: req.csrfToken(), domos: docs });
   });
