@@ -1,3 +1,6 @@
+// import Modal from "./Modal";
+// import useModal from "./useModal";
+
 const handleDomo = e => {
   e.preventDefault();
 
@@ -22,6 +25,21 @@ const handleDomo = e => {
 
   return false;
 };
+
+// const Modal = props => {
+//   return (
+//     <div id="myModal" class="modal">
+//       <div class="modal-content">
+//         <span class="close">&times;</span>
+//         <p>Some text in the Modal..</p>
+//       </div>
+//     </div>
+//   );
+// };
+
+// const handleClick = e => {
+//   console.log("I've been clicked!");
+// };
 
 const DomoForm = props => {
   return (
@@ -60,9 +78,8 @@ const DomoList = function(props) {
   }
 
   const domoNodes = props.domos.map(function(domo) {
-    console.log("asdasd domo: ", domo);
     return (
-      <div key={domo._id} className="domo">
+      <div key={domo._id} className="domo" onClick={handleClick}>
         <img
           src="/assets/img/domoface.jpeg"
           alt="domo face"
@@ -87,13 +104,29 @@ const loadDomosFromServer = () => {
   });
 };
 
+const ModalApp = () => {
+  const { isShowing, toggle } = useModal();
+  return (
+    <div className="App">
+      <button className="button-default" onClick={toggle}>
+        Show Modal
+      </button>
+      <Modal isShowing={isShowing} hide={toggle} />
+    </div>
+  );
+};
+
 const setup = function(csrf) {
+  const { isShowing, toggle } = useModal();
+
   ReactDOM.render(
     <DomoForm csrf={csrf} />,
     document.querySelector("#makeDomo")
   );
 
   ReactDOM.render(<DomoList domos={[]} />, document.querySelector("#domos"));
+
+  ReactDOM.render(<ModalApp />, document.querySelector("#domos"));
 
   loadDomosFromServer();
 };
