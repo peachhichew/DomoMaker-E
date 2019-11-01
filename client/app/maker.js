@@ -26,20 +26,10 @@ const handleDomo = e => {
   return false;
 };
 
-// const Modal = props => {
-//   return (
-//     <div id="myModal" class="modal">
-//       <div class="modal-content">
-//         <span class="close">&times;</span>
-//         <p>Some text in the Modal..</p>
-//       </div>
-//     </div>
-//   );
-// };
-
-// const handleClick = e => {
-//   console.log("I've been clicked!");
-// };
+const handleClick = e => {
+  console.log("I've been clicked!");
+  ReactDOM.render(<EditDomo />, document.querySelector("#domos"));
+};
 
 const DomoForm = props => {
   return (
@@ -95,6 +85,70 @@ const DomoList = function(props) {
   return <div className="domoList">{domoNodes}</div>;
 };
 
+class Modal extends React.Component {
+  render() {
+    // Render nothing if the "show" prop is false
+    if (!this.props.show) {
+      return null;
+    }
+
+    // The gray background
+    const backdropStyle = {
+      position: "fixed",
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+      backgroundColor: "rgba(0,0,0,0.3)",
+      padding: 50
+    };
+
+    // The modal "window"
+    const modalStyle = {
+      backgroundColor: "#fff",
+      borderRadius: 5,
+      maxWidth: 500,
+      minHeight: 300,
+      margin: "0 auto",
+      padding: 30
+    };
+
+    return (
+      <div className="backdrop" style={{ backdropStyle }}>
+        <div className="modal" style={{ modalStyle }}>
+          <div className="footer">
+            <button onClick={this.props.onClose}>Close</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
+
+class EditDomo extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { isOpen: false };
+    this.toggleModal = this.toggleModal.bind(this);
+  }
+
+  toggleModal() {
+    this.setState({ isOpen: !this.state.isOpen });
+  }
+
+  render() {
+    return (
+      <div>
+        <button onClick={this.toggleModal}>Open the modal</button>
+
+        <Modal show={this.state.isOpen} onClose={this.toggleModal}>
+          Here's some content for the modal
+        </Modal>
+      </div>
+    );
+  }
+}
+
 const loadDomosFromServer = () => {
   sendAjax("GET", "/getDomos", null, data => {
     ReactDOM.render(
@@ -104,29 +158,13 @@ const loadDomosFromServer = () => {
   });
 };
 
-const ModalApp = () => {
-  const { isShowing, toggle } = useModal();
-  return (
-    <div className="App">
-      <button className="button-default" onClick={toggle}>
-        Show Modal
-      </button>
-      <Modal isShowing={isShowing} hide={toggle} />
-    </div>
-  );
-};
-
 const setup = function(csrf) {
-  const { isShowing, toggle } = useModal();
-
   ReactDOM.render(
     <DomoForm csrf={csrf} />,
     document.querySelector("#makeDomo")
   );
 
   ReactDOM.render(<DomoList domos={[]} />, document.querySelector("#domos"));
-
-  ReactDOM.render(<ModalApp />, document.querySelector("#domos"));
 
   loadDomosFromServer();
 };

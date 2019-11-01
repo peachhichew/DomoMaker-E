@@ -1,5 +1,13 @@
 "use strict";
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 // import Modal from "./Modal";
 // import useModal from "./useModal";
 
@@ -19,20 +27,10 @@ var handleDomo = function handleDomo(e) {
   return false;
 };
 
-// const Modal = props => {
-//   return (
-//     <div id="myModal" class="modal">
-//       <div class="modal-content">
-//         <span class="close">&times;</span>
-//         <p>Some text in the Modal..</p>
-//       </div>
-//     </div>
-//   );
-// };
-
-// const handleClick = e => {
-//   console.log("I've been clicked!");
-// };
+var handleClick = function handleClick(e) {
+  console.log("I've been clicked!");
+  ReactDOM.render(React.createElement(EditDomo, null), document.querySelector("#domos"));
+};
 
 var DomoForm = function DomoForm(props) {
   return React.createElement(
@@ -123,39 +121,118 @@ var DomoList = function DomoList(props) {
   );
 };
 
+var Modal = function (_React$Component) {
+  _inherits(Modal, _React$Component);
+
+  function Modal() {
+    _classCallCheck(this, Modal);
+
+    return _possibleConstructorReturn(this, (Modal.__proto__ || Object.getPrototypeOf(Modal)).apply(this, arguments));
+  }
+
+  _createClass(Modal, [{
+    key: "render",
+    value: function render() {
+      // Render nothing if the "show" prop is false
+      if (!this.props.show) {
+        return null;
+      }
+
+      // The gray background
+      var backdropStyle = {
+        position: "fixed",
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: "rgba(0,0,0,0.3)",
+        padding: 50
+      };
+
+      // The modal "window"
+      var modalStyle = {
+        backgroundColor: "#fff",
+        borderRadius: 5,
+        maxWidth: 500,
+        minHeight: 300,
+        margin: "0 auto",
+        padding: 30
+      };
+
+      return React.createElement(
+        "div",
+        { className: "backdrop", style: { backdropStyle: backdropStyle } },
+        React.createElement(
+          "div",
+          { className: "modal", style: { modalStyle: modalStyle } },
+          React.createElement(
+            "div",
+            { className: "footer" },
+            React.createElement(
+              "button",
+              { onClick: this.props.onClose },
+              "Close"
+            )
+          )
+        )
+      );
+    }
+  }]);
+
+  return Modal;
+}(React.Component);
+
+var EditDomo = function (_React$Component2) {
+  _inherits(EditDomo, _React$Component2);
+
+  function EditDomo(props) {
+    _classCallCheck(this, EditDomo);
+
+    var _this2 = _possibleConstructorReturn(this, (EditDomo.__proto__ || Object.getPrototypeOf(EditDomo)).call(this, props));
+
+    _this2.state = { isOpen: false };
+    _this2.toggleModal = _this2.toggleModal.bind(_this2);
+    return _this2;
+  }
+
+  _createClass(EditDomo, [{
+    key: "toggleModal",
+    value: function toggleModal() {
+      this.setState({ isOpen: !this.state.isOpen });
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      return React.createElement(
+        "div",
+        null,
+        React.createElement(
+          "button",
+          { onClick: this.toggleModal },
+          "Open the modal"
+        ),
+        React.createElement(
+          Modal,
+          { show: this.state.isOpen, onClose: this.toggleModal },
+          "Here's some content for the modal"
+        )
+      );
+    }
+  }]);
+
+  return EditDomo;
+}(React.Component);
+
 var loadDomosFromServer = function loadDomosFromServer() {
   sendAjax("GET", "/getDomos", null, function (data) {
     ReactDOM.render(React.createElement(DomoList, { domos: data.domos }), document.querySelector("#domos"));
   });
 };
 
-var ModalApp = function ModalApp() {
-  var _useModal = useModal(),
-      isShowing = _useModal.isShowing,
-      toggle = _useModal.toggle;
-
-  return React.createElement(
-    "div",
-    { className: "App" },
-    React.createElement(
-      "button",
-      { className: "button-default", onClick: toggle },
-      "Show Modal"
-    ),
-    React.createElement(Modal, { isShowing: isShowing, hide: toggle })
-  );
-};
-
 var setup = function setup(csrf) {
-  var _useModal2 = useModal(),
-      isShowing = _useModal2.isShowing,
-      toggle = _useModal2.toggle;
-
   ReactDOM.render(React.createElement(DomoForm, { csrf: csrf }), document.querySelector("#makeDomo"));
 
   ReactDOM.render(React.createElement(DomoList, { domos: [] }), document.querySelector("#domos"));
-
-  ReactDOM.render(React.createElement(ModalApp, null), document.querySelector("#domos"));
 
   loadDomosFromServer();
 };
@@ -169,94 +246,128 @@ var getToken = function getToken() {
 $(document).ready(function () {
   getToken();
 });
-"use strict";
+// https://daveceddia.com/open-modal-in-react/
+// https://alligator.io/react/modal-component/
 
 // import React from "react";
 // import ReactDOM from "react-dom";
 
-var Modal = function Modal(_ref) {
-  var isShowing = _ref.isShowing,
-      hide = _ref.hide;
-  return isShowing ? React.createPortal(React.createElement(
-    React.Fragment,
-    null,
-    React.createElement(
-      "div",
-      { className: "modal-overlay" },
-      React.createElement(
-        "div",
-        {
-          classname: "modal-wrapper",
-          "aria-model": true,
-          "aria-hidden": true,
-          tabIndex: -1,
-          role: "dialog"
-        },
-        React.createElement(
-          "div",
-          { className: "modal" },
-          React.createElement(
-            "div",
-            { className: "modal-header" },
-            React.createElement(
-              "button",
-              {
-                type: "button",
-                className: "modal-close-button",
-                "data-dismiss": "modal",
-                "aria-label": "Close",
-                onClick: hide
-              },
-              React.createElement(
-                "span",
-                { "aria-hidden": "true" },
-                "\xD7"
-              )
-            )
-          )
-        ),
-        React.createElement(
-          "p",
-          null,
-          "Hello, I'm a modal."
-        )
-      )
-    )
-  ), document.body) : null;
-};
+// const Modal = ({ isShowing, hide }) =>
+//   isShowing
+//     ? React.createPortal(
+//         <React.Fragment>
+//           <div className="modal-overlay">
+//             <div
+//               classname="modal-wrapper"
+//               aria-model
+//               aria-hidden
+//               tabIndex={-1}
+//               role="dialog"
+//             >
+//               <div className="modal">
+//                 <div className="modal-header">
+//                   <button
+//                     type="button"
+//                     className="modal-close-button"
+//                     data-dismiss="modal"
+//                     aria-label="Close"
+//                     onClick={hide}
+//                   >
+//                     <span aria-hidden="true">&times;</span>
+//                   </button>
+//                 </div>
+//               </div>
+//               <p>Hello, I'm a modal.</p>
+//             </div>
+//           </div>
+//         </React.Fragment>,
+//         document.body
+//       )
+//     : null;
+
+// class Modal extends React.Component {
+//   render() {
+//     // Render nothing if the "show" prop is false
+//     if (!this.props.show) {
+//       return null;
+//     }
+
+//     // The gray background
+//     const backdropStyle = {
+//       position: "fixed",
+//       top: 0,
+//       bottom: 0,
+//       left: 0,
+//       right: 0,
+//       backgroundColor: "rgba(0,0,0,0.3)",
+//       padding: 50
+//     };
+
+//     // The modal "window"
+//     const modalStyle = {
+//       backgroundColor: "#fff",
+//       borderRadius: 5,
+//       maxWidth: 500,
+//       minHeight: 300,
+//       margin: "0 auto",
+//       padding: 30
+//     };
+
+//     return (
+//       <div className="backdrop" style={{ backdropStyle }}>
+//         <div className="modal" style={{ modalStyle }}>
+//           {this.props.children}
+
+//           <div className="footer">
+//             <button onClick={this.props.onClose}>Close</button>
+//           </div>
+//         </div>
+//       </div>
+//     );
+//   }
+// }
 
 // export default Modal;
 "use strict";
-
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
 // https://upmostly.com/tutorials/modal-components-react-custom-hooks
 
 // import { useState } from "react";
 
-var useModal = function useModal() {
-  // using React hooks to store the current view state of the modal
-  var _useState = useState(false),
-      _useState2 = _slicedToArray(_useState, 2),
-      isShowing = _useState2[0],
-      setIsShowing = _useState2[1];
+// const useModal = () => {
+//   // using React hooks to store the current view state of the modal
+//   const [isShowing, setIsShowing] = useState(false);
 
-  // this function toggles the value of isShowing to be the opposite
-  // of what it currently is
+//   // this function toggles the value of isShowing to be the opposite
+//   // of what it currently is
+//   function toggle() {
+//     setIsShowing(!isShowing);
+//   }
 
+//   // return these values so that the component has access to them
+//   return {
+//     isShowing,
+//     toggle
+//   };
+// };
 
-  function toggle() {
-    setIsShowing(!isShowing);
-  }
+// class UseModal extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     this.state = {
+//       isShowing: false,
+//       setIsShowing: false
+//     };
+//   }
 
-  // return these values so that the component has access to them
-  return {
-    isShowing: isShowing,
-    toggle: toggle
-  };
-};
+//   toggle() {
+//     this.setState({ setIsShowing: !isShowing });
+//   }
+
+//   return {isShowing, toggle}
+// }
 
 // export default useModal;
+"use strict";
 "use strict";
 
 var handleError = function handleError(message) {
