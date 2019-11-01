@@ -165,6 +165,7 @@ var Modal = function (_React$Component) {
         React.createElement(
           "div",
           { className: "modal", style: { modalStyle: modalStyle } },
+          this.props.children,
           React.createElement(
             "div",
             { className: "footer" },
