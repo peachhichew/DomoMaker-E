@@ -26,11 +26,6 @@ const handleDomo = e => {
   return false;
 };
 
-const handleClick = e => {
-  console.log("I've been clicked!");
-  ReactDOM.render(<EditDomo />, document.querySelector("#domos"));
-};
-
 const DomoForm = props => {
   return (
     <form
@@ -58,6 +53,11 @@ const DomoForm = props => {
   );
 };
 
+const handleClick = domo => {
+  console.log("I've been clicked!");
+  ReactDOM.render(<EditDomo domos={domo} />, document.querySelector("#domos"));
+};
+
 const DomoList = function(props) {
   if (props.domos.length === 0) {
     return (
@@ -69,7 +69,7 @@ const DomoList = function(props) {
 
   const domoNodes = props.domos.map(function(domo) {
     return (
-      <div key={domo._id} className="domo" onClick={handleClick}>
+      <div key={domo._id} className="domo" onClick={handleClick(domo)}>
         <img
           src="/assets/img/domoface.jpeg"
           alt="domo face"
@@ -126,10 +126,107 @@ class Modal extends React.Component {
   }
 }
 
+// class DomoList extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     this.state = { domos: props.domos, isOpen: false };
+//     this.toggleModal = this.toggleModal.bind(this);
+//     this.loadDomosFromServer = this.loadDomosFromServer.bind(this);
+//     this.loadDomosFromServer();
+//   }
+
+//   toggleModal() {
+//     this.setState({ isOpen: !this.state.isOpen });
+//   }
+
+//   loadDomosFromServer() {
+//     sendAjax("GET", "/getDomos", null, data => {
+//       ReactDOM.render(
+//         <DomoList domos={data.domos} />,
+//         document.querySelector("#domos")
+//       );
+
+//       this.setState({ domos: data.domos });
+//     });
+//   }
+
+//   render() {
+//     console.log("state", this.state);
+//     // original above
+//     if (this.state.domos.length === 0) {
+//       return (
+//         <div className="domosList">
+//           <h3 className="emptyDomo">No Domos yet</h3>
+//         </div>
+//       );
+//     }
+
+//     const test = () => {
+//       return this.toggleModal();
+//     };
+
+//     const getState = () => {
+//       return this.state;
+//     };
+
+//     const domoNodes = this.state.domos.map(function(domo) {
+//       return (
+//         <div key={domo._id} className="domo" onClick={test}>
+//           {getState.isOpen ? (
+//             <Modal show={getState.isOpen} onClose={test}>
+//               Here's some content for the modal
+//             </Modal>
+//           ) : (
+//             <div>
+//               <img
+//                 src="/assets/img/domoface.jpeg"
+//                 alt="domo face"
+//                 className="domoFace"
+//               />
+//               <h3 className="domoName">Name: {domo.name}</h3>
+//               <h3 className="domoAge">Age: {domo.age}</h3>
+//               <h3 className="domoFavoriteFood">
+//                 Favorite food: {domo.favoriteFood}
+//               </h3>
+//             </div>
+//           )}
+//         </div>
+//       );
+//     });
+
+//     return <div className="domoList">{domoNodes}</div>;
+//   }
+// }
+
+const handleEditDomo = e => {
+  e.preventDefault();
+
+  $("#domoMessage").animate({ width: "hide" }, 350);
+  if (
+    $("#domoName").val() == "" ||
+    $("#domoAge").val() == "" ||
+    $("#domoFavoriteFood").val() == ""
+  ) {
+    handleError("RAWR! All fields are required");
+    return false;
+  }
+
+  sendAjax(
+    "PUT",
+    $("#domoForm").attr("action"),
+    $("#domoForm").serialize(),
+    function() {
+      loadDomosFromServer();
+    }
+  );
+
+  return false;
+};
+
 class EditDomo extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { isOpen: false };
+    this.state = { isOpen: false, domos: props.domos };
     this.toggleModal = this.toggleModal.bind(this);
   }
 
@@ -138,12 +235,47 @@ class EditDomo extends React.Component {
   }
 
   render() {
+    console.log();
+    console.log(this.state);
+
     return (
       <div>
-        <button onClick={this.toggleModal}>Open the modal</button>
+        <button onClick={this.toggleModal}>Edit Domo</button>
 
         <Modal show={this.state.isOpen} onClose={this.toggleModal}>
-          Here's some content for the modal
+          <form
+            id="domoFormEdit"
+            onSubmit={handleEditDomo}
+            name="domoForm"
+            action="/maker"
+            method="PUT"
+          >
+            <label htmlFor="name">Name: </label>
+            <input
+              id="domoNameEdit"
+              type="text"
+              name="name"
+              placeholder={this.state.domos.name}
+            />
+            <br />
+            <label htmlFor="age">Age: </label>
+            <input
+              id="domoAgeEdit"
+              type="text"
+              name="age"
+              placeholder={this.state.domos.age}
+            />
+            <br />
+            <label htmlFor="favoriteFood">Favorite food: </label>
+            <input
+              id="domoFavoriteFoodEdit"
+              type="text"
+              name="favoriteFood"
+              placeholder={this.state.domos.favoriteFood}
+            />
+            <br />
+            <input className="makeDomoSubmit" type="submit" value="Make Domo" />
+          </form>
         </Modal>
       </div>
     );
@@ -166,6 +298,7 @@ const setup = function(csrf) {
   );
 
   ReactDOM.render(<DomoList domos={[]} />, document.querySelector("#domos"));
+  // ReactDOM.render(<EditDomo domos={[]} />, document.querySelector("#domos"));
 
   loadDomosFromServer();
 };
