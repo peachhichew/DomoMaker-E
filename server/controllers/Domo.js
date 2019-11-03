@@ -41,17 +41,17 @@ const editDomo = (request, response) => {
   const req = request;
   const res = response;
 
-  // const ownerId = Domo.DomoModel.findByOwner(
-  //   req.session.account._id,
-  //   (err, docs) => {
-  //     if (err) {
-  //       console.log(err);
-  //       return res.status(400).json({ error: "An error occurred" });
-  //     }
+  Domo.DomoModel.findByOwner(req.session.account._id, (err, docs) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).json({ error: "An error occurred" });
+    }
 
-  //     return res.json({ domos: docs });
-  //   }
-  // );
+    docs.name = req.body.name;
+    docs.age = req.body.age;
+    docs.favoriteFood = req.body.favoriteFood;
+    return res.json({ domos: docs });
+  });
 };
 
 const makerPage = (req, res) => {
