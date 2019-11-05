@@ -53,10 +53,20 @@ const DomoForm = props => {
   );
 };
 
-const handleClick = domo => {
-  console.log("I've been clicked!");
-  ReactDOM.render(<EditDomo domos={domo} />, document.querySelector("#domos"));
-};
+// can pass in e instead and query select the id of the event to get the domo info
+// const handleClick = domo => {
+//   // console.log("12345", e.target.querySelector("#renderModal"));
+//   console.log(
+//     "document.querySelector('#renderModal')",
+//     document.querySelector("#renderModal")
+//   );
+//   // console.log("e.target: ", e.target);
+//   ReactDOM.render(
+//     <EditDomo domos={domo} />,
+//     //e.target.querySelector("#renderModal")
+//     document.querySelector("#renderModal")
+//   );
+// };
 
 const DomoList = function(props) {
   if (props.domos.length === 0) {
@@ -69,7 +79,21 @@ const DomoList = function(props) {
 
   const domoNodes = props.domos.map(function(domo) {
     return (
-      <div key={domo._id} className="domo" onClick={handleClick(domo)}>
+      <div
+        key={domo._id}
+        className="domo"
+        onClick={e => {
+          // console.log(
+          //   "document.querySelector('#renderModal')",
+          //   document.querySelector("#renderModal")
+          // );
+          ReactDOM.render(
+            <EditDomo domos={domo} />,
+            e.target.querySelector("#renderModal")
+          );
+        }}
+      >
+        <div id="renderModal"></div>
         <img
           src="/assets/img/domoface.jpeg"
           alt="domo face"
@@ -235,7 +259,6 @@ class EditDomo extends React.Component {
   }
 
   render() {
-    console.log();
     console.log(this.state);
 
     return (

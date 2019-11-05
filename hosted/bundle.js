@@ -66,10 +66,20 @@ var DomoForm = function DomoForm(props) {
   );
 };
 
-var handleClick = function handleClick(domo) {
-  console.log("I've been clicked!");
-  ReactDOM.render(React.createElement(EditDomo, { domos: domo }), document.querySelector("#domos"));
-};
+// can pass in e instead and query select the id of the event to get the domo info
+// const handleClick = domo => {
+//   // console.log("12345", e.target.querySelector("#renderModal"));
+//   console.log(
+//     "document.querySelector('#renderModal')",
+//     document.querySelector("#renderModal")
+//   );
+//   // console.log("e.target: ", e.target);
+//   ReactDOM.render(
+//     <EditDomo domos={domo} />,
+//     //e.target.querySelector("#renderModal")
+//     document.querySelector("#renderModal")
+//   );
+// };
 
 var DomoList = function DomoList(props) {
   if (props.domos.length === 0) {
@@ -87,7 +97,18 @@ var DomoList = function DomoList(props) {
   var domoNodes = props.domos.map(function (domo) {
     return React.createElement(
       "div",
-      { key: domo._id, className: "domo", onClick: handleClick(domo) },
+      {
+        key: domo._id,
+        className: "domo",
+        onClick: function onClick(e) {
+          // console.log(
+          //   "document.querySelector('#renderModal')",
+          //   document.querySelector("#renderModal")
+          // );
+          ReactDOM.render(React.createElement(EditDomo, { domos: domo }), e.target.querySelector("#renderModal"));
+        }
+      },
+      React.createElement("div", { id: "renderModal" }),
       React.createElement("img", {
         src: "/assets/img/domoface.jpeg",
         alt: "domo face",
@@ -292,7 +313,6 @@ var EditDomo = function (_React$Component2) {
   }, {
     key: "render",
     value: function render() {
-      console.log();
       console.log(this.state);
 
       return React.createElement(

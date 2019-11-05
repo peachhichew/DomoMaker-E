@@ -41,6 +41,10 @@ const editDomo = (request, response) => {
   const req = request;
   const res = response;
 
+  // get the id of the domo
+  // match it with the account name
+  // update the necessary fields
+
   Domo.DomoModel.findByOwner(req.session.account._id, (err, docs) => {
     if (err) {
       console.log(err);
