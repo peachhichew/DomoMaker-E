@@ -49,13 +49,13 @@ DomoSchema.statics.findByOwner = (ownerId, callback) => {
   };
 
   return DomoModel.find(search)
-    .select("name age favoriteFood")
+    .select("name age favoriteFood _id")
     .exec(callback);
 };
 
 DomoSchema.statics.findById = (id, callback) => {
   const search = {
-    id: convertId(id)
+    _id: convertId(id)
   };
 
   return DomoModel.findOne(search, callback);

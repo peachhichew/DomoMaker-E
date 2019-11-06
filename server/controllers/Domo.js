@@ -42,34 +42,45 @@ const editDomo = (request, response) => {
   const req = request;
   const res = response;
 
-  // get the id of the domo
-  // match it with the account name
-  // update the necessary fields
+  // look up domo by id
+  // check that owner = req.session.account._id
+  // update domo if the above is true
 
-  Domo.DomoModel.findById(req.body._id, (err, docs) => {
+  Domo.DomoModel.findById(req.body._id, (err, doc) => {
     if (err) {
       console.log(err);
       return res.status(400).json({ error: "An error occurred" });
     }
+    console.log("req.body._id", req.body._id);
 
-    Domo.DomoModel.findByOwner(req.session.account._id, (err, docs) => {
-      if (err) {
-        console.log(err);
+    if (!doc) {
+      return res.status(400).json({ error: "invalid domo" });
+    }
+
+    console.log("doc:", doc);
+    console.log("req.session.account._id", req.session.account._id);
+    console.log(
+      "doc.owner == req.session.account._id",
+      doc.owner == req.session.account._id
+    );
+    if (doc.owner == req.session.account._id) {
+      let domo = doc;
+      domo.name = req.body.name;
+      domo.age = req.body.age;
+      domo.favoriteFood = req.body.favoriteFood;
+      const domoPromise = domo.save();
+
+      domoPromise.then(() => {
+        console.log("domo: ", domo);
+        res.json({ domo });
+      });
+
+      domoPromise.catch(err => {
         return res.status(400).json({ error: "An error occurred" });
-      }
+      });
 
-      console.log("docs", docs);
-
-      return res.render("app", { csrfToken: req.csrfToken(), domos: docs });
-    });
-
-    // if (req.session.account._id)
-
-    docs.name = req.body.name;
-    docs.age = req.body.age;
-    docs.favoriteFood = req.body.favoriteFood;
-    docs.save();
-    return res.json({ domos: docs });
+      return domoPromise;
+    }
   });
 };
 

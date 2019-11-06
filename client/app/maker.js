@@ -77,6 +77,7 @@ const DomoList = function(props) {
     );
   }
 
+  // make a GET request to get another csrf token back
   const domoNodes = props.domos.map(function(domo) {
     return (
       <div
@@ -88,7 +89,7 @@ const DomoList = function(props) {
           //   document.querySelector("#renderModal")
           // );
           ReactDOM.render(
-            <EditDomo domos={domo} />,
+            <EditDomo domos={domo} csrf={props.csrf} />,
             e.target.querySelector("#renderModal")
           );
         }}
@@ -250,7 +251,7 @@ const handleEditDomo = e => {
 class EditDomo extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { isOpen: false, domos: props.domos };
+    this.state = { isOpen: false, domos: props.domos, csrf: props.csrf };
     this.toggleModal = this.toggleModal.bind(this);
   }
 
@@ -297,6 +298,8 @@ class EditDomo extends React.Component {
               placeholder={this.state.domos.favoriteFood}
             />
             <br />
+            <input type="hidden" name="_csrf" value={this.state.csrf} />
+            <input type="hidden" name="_id" value={this.state.domos._id} />
             <input className="makeDomoSubmit" type="submit" value="Make Domo" />
           </form>
         </Modal>
@@ -305,10 +308,10 @@ class EditDomo extends React.Component {
   }
 }
 
-const loadDomosFromServer = () => {
+const loadDomosFromServer = csrf => {
   sendAjax("GET", "/getDomos", null, data => {
     ReactDOM.render(
-      <DomoList domos={data.domos} />,
+      <DomoList domos={data.domos} csrf={csrf} />,
       document.querySelector("#domos")
     );
   });
@@ -320,10 +323,13 @@ const setup = function(csrf) {
     document.querySelector("#makeDomo")
   );
 
-  ReactDOM.render(<DomoList domos={[]} />, document.querySelector("#domos"));
+  ReactDOM.render(
+    <DomoList domos={[]} csrf={csrf} />,
+    document.querySelector("#domos")
+  );
   // ReactDOM.render(<EditDomo domos={[]} />, document.querySelector("#domos"));
 
-  loadDomosFromServer();
+  loadDomosFromServer(csrf);
 };
 
 const getToken = () => {

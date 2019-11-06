@@ -94,6 +94,7 @@ var DomoList = function DomoList(props) {
     );
   }
 
+  // make a GET request to get another csrf token back
   var domoNodes = props.domos.map(function (domo) {
     return React.createElement(
       "div",
@@ -105,7 +106,7 @@ var DomoList = function DomoList(props) {
           //   "document.querySelector('#renderModal')",
           //   document.querySelector("#renderModal")
           // );
-          ReactDOM.render(React.createElement(EditDomo, { domos: domo }), e.target.querySelector("#renderModal"));
+          ReactDOM.render(React.createElement(EditDomo, { domos: domo, csrf: props.csrf }), e.target.querySelector("#renderModal"));
         }
       },
       React.createElement("div", { id: "renderModal" }),
@@ -300,7 +301,7 @@ var EditDomo = function (_React$Component2) {
 
     var _this2 = _possibleConstructorReturn(this, (EditDomo.__proto__ || Object.getPrototypeOf(EditDomo)).call(this, props));
 
-    _this2.state = { isOpen: false, domos: props.domos };
+    _this2.state = { isOpen: false, domos: props.domos, csrf: props.csrf };
     _this2.toggleModal = _this2.toggleModal.bind(_this2);
     return _this2;
   }
@@ -371,6 +372,8 @@ var EditDomo = function (_React$Component2) {
               placeholder: this.state.domos.favoriteFood
             }),
             React.createElement("br", null),
+            React.createElement("input", { type: "hidden", name: "_csrf", value: this.state.csrf }),
+            React.createElement("input", { type: "hidden", name: "_id", value: this.state.domos._id }),
             React.createElement("input", { className: "makeDomoSubmit", type: "submit", value: "Make Domo" })
           )
         )
@@ -381,19 +384,19 @@ var EditDomo = function (_React$Component2) {
   return EditDomo;
 }(React.Component);
 
-var loadDomosFromServer = function loadDomosFromServer() {
+var loadDomosFromServer = function loadDomosFromServer(csrf) {
   sendAjax("GET", "/getDomos", null, function (data) {
-    ReactDOM.render(React.createElement(DomoList, { domos: data.domos }), document.querySelector("#domos"));
+    ReactDOM.render(React.createElement(DomoList, { domos: data.domos, csrf: csrf }), document.querySelector("#domos"));
   });
 };
 
 var setup = function setup(csrf) {
   ReactDOM.render(React.createElement(DomoForm, { csrf: csrf }), document.querySelector("#makeDomo"));
 
-  ReactDOM.render(React.createElement(DomoList, { domos: [] }), document.querySelector("#domos"));
+  ReactDOM.render(React.createElement(DomoList, { domos: [], csrf: csrf }), document.querySelector("#domos"));
   // ReactDOM.render(<EditDomo domos={[]} />, document.querySelector("#domos"));
 
-  loadDomosFromServer();
+  loadDomosFromServer(csrf);
 };
 
 var getToken = function getToken() {
