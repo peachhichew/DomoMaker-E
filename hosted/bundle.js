@@ -280,12 +280,12 @@ var handleEditDomo = function handleEditDomo(e) {
   e.preventDefault();
 
   $("#domoMessage").animate({ width: "hide" }, 350);
-  if ($("#domoName").val() == "" || $("#domoAge").val() == "" || $("#domoFavoriteFood").val() == "") {
+  if ($("#domoNameEdit").val() == "" || $("#domoAgeEdit").val() == "" || $("#domoFavoriteFoodEdit").val() == "") {
     handleError("RAWR! All fields are required");
     return false;
   }
 
-  sendAjax("PUT", $("#domoForm").attr("action"), $("#domoForm").serialize(), function () {
+  sendAjax("POST", $("#domoFormEdit").attr("action"), $("#domoFormEdit").serialize(), function () {
     loadDomosFromServer();
   });
 
@@ -332,8 +332,8 @@ var EditDomo = function (_React$Component2) {
               id: "domoFormEdit",
               onSubmit: handleEditDomo,
               name: "domoForm",
-              action: "/maker",
-              method: "PUT"
+              action: "/updateDomo",
+              method: "POST"
             },
             React.createElement(
               "label",

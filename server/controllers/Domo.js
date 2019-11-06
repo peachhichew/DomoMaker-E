@@ -38,6 +38,7 @@ const makeDomo = (req, res) => {
 };
 
 const editDomo = (request, response) => {
+  console.log("inside editDomo");
   const req = request;
   const res = response;
 
@@ -45,15 +46,29 @@ const editDomo = (request, response) => {
   // match it with the account name
   // update the necessary fields
 
-  Domo.DomoModel.findByOwner(req.session.account._id, (err, docs) => {
+  Domo.DomoModel.findById(req.body._id, (err, docs) => {
     if (err) {
       console.log(err);
       return res.status(400).json({ error: "An error occurred" });
     }
 
+    Domo.DomoModel.findByOwner(req.session.account._id, (err, docs) => {
+      if (err) {
+        console.log(err);
+        return res.status(400).json({ error: "An error occurred" });
+      }
+
+      console.log("docs", docs);
+
+      return res.render("app", { csrfToken: req.csrfToken(), domos: docs });
+    });
+
+    // if (req.session.account._id)
+
     docs.name = req.body.name;
     docs.age = req.body.age;
     docs.favoriteFood = req.body.favoriteFood;
+    docs.save();
     return res.json({ domos: docs });
   });
 };

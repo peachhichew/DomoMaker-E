@@ -53,6 +53,14 @@ DomoSchema.statics.findByOwner = (ownerId, callback) => {
     .exec(callback);
 };
 
+DomoSchema.statics.findById = (id, callback) => {
+  const search = {
+    id: convertId(id)
+  };
+
+  return DomoModel.findOne(search, callback);
+};
+
 DomoModel = mongoose.model("Domo", DomoSchema);
 
 module.exports.DomoModel = DomoModel;
