@@ -374,7 +374,11 @@ var EditDomo = function (_React$Component2) {
             React.createElement("br", null),
             React.createElement("input", { type: "hidden", name: "_csrf", value: this.state.csrf }),
             React.createElement("input", { type: "hidden", name: "_id", value: this.state.domos._id }),
-            React.createElement("input", { className: "makeDomoSubmit", type: "submit", value: "Make Domo" })
+            React.createElement("input", {
+              className: "makeDomoSubmit",
+              type: "submit",
+              value: "Update Domo"
+            })
           )
         )
       );
